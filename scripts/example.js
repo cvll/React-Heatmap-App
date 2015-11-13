@@ -11,8 +11,7 @@ var matrix_with_numbers = [];
 for(var i = 0; i<NUMBER_OF_PRODUCTS; i++) {
     matrix_with_numbers[i] = [];
     for (var j = 0; j<NUMBER_OF_ZIP_CODES; j++) {
-        var cell_number = (Math.random()*100000).toFixed(0);
-        matrix_with_numbers[i][j] = cell_number;
+        matrix_with_numbers[i][j] = (Math.random()*100000).toFixed(0);
     }
 }
 
@@ -21,12 +20,6 @@ var Table = React.createClass({
     getInitialState: function() {
         return {data: this.props.data};
     },
-    //componentDidMount: function() {
-    //    console.log('component was mounted');
-    //},
-    //componentWillMount: function() {
-    //  console.log('component will mount');
-    //},
     componentWillUpdate: function(){
         //console.log('component will update');
         console.time('update');
@@ -38,13 +31,13 @@ var Table = React.createClass({
     render: function () {
         return (
             <table><tbody>
-                {this.state.data.map(function(row) {
+                {this.state.data.map(function(row, i) {
                     //console.log(row);
                     return (
-                        <tr>
-                            {row.map(function(cell, i) {
+                        <tr key={i}>
+                            {row.map(function(cell, j) {
                                 var color = colorizeMe(cell);
-                                return <td><span style={color}>{cell}</span></td>;
+                                return <td key={j} ><span style={color}>{cell}</span></td>;
                             })}
                         </tr>);
                 })}
@@ -63,43 +56,34 @@ function colorizeMe(value) {
     else {
         green = value/255;
     }
-    //console.log('background-color':'rgb('+red.toFixed(0)+','+green.toFixed(0)+',0)');
     return {'backgroundColor':'rgba('+red.toFixed(0)+','+green.toFixed(0)+',0,0.5)'};
-    //return 'rgba('+red.toFixed(0)+','+green.toFixed(0)+',0,0.5)';
-};
+}
 
-//var data = [[1,2,3],[4,5,6],[7,8,9]];
 var data = matrix_with_numbers;
-//
-// Render the component in the "app" DOM node
-// giving it the initial data
-//
-var table = React.render(
+
+var table = ReactDOM.render(
     React.createElement(Table, {data: data}),
     document.getElementById('content'));
 
 
-var LikeButton = React.createClass({
+var DiffButton = React.createClass({
 
     handleClick: function(event) {
         //this.setState({liked: !this.state.liked});
 
-        //var new_data = [];
-        //for(var i = 0; i<NUMBER_OF_PRODUCTS; i++) {
-        //    new_data[i] = [];
-        //    for (var j = 0; j<NUMBER_OF_ZIP_CODES; j++) {
-        //        var cell_number = (Math.random()*100000).toFixed(0);
-        //        new_data[i][j] = cell_number;
-        //    }
-        //}
+        for (j = 0 ; j<NUMBER_OF_DIFFS; j++) {
+            if (data[0][j] < 50000) {
+                data[0][j] = Number(data[0][j]) + 50000;
+            }
+            else {
+                data[0][j] = Number(data[0][j]) - 50000;
+            }
+        }
 
-        data[0][0] = (Math.random()*100000).toFixed(0);
-
-        console.time("setstate");
-        //table.setState({data: [[]] })
-        //table.setState({data: new_data });
+        //console.log(NUMBER_OF_DIFFS);
+        //console.time("setstate");
         table.setState({data: data });
-        console.timeEnd("setstate");
+        //console.timeEnd("setstate");
     },
     render: function() {
         return (
@@ -111,6 +95,6 @@ var LikeButton = React.createClass({
 });
 
 ReactDOM.render(
-    <LikeButton />,
+    <DiffButton />,
     document.getElementById('button_holder')
 );
